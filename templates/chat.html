@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DemirAI v2 – Car Advisor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100">
+  <!-- Test: Eğer bunu görüyorsanız sayfa yüklendi -->
+  <noscript>
+    <div style="padding: 20px; background: red; color: white;">
+      JavaScript devre dışı! Lütfen JavaScript'i etkinleştirin.
+    </div>
+  </noscript>
+  <div class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="hidden lg:flex w-80 border-r border-zinc-800 p-6 flex-col gap-6">
+      <div>
+        <div class="text-xl font-semibold tracking-tight">DemirAI v2</div>
+        <div class="text-sm text-zinc-400 mt-1">DataWarehouse + Ollama (gpt-oss:120b-cloud)</div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="text-xs uppercase tracking-widest text-zinc-500">Hızlı Sorular</div>
+        <button class="quick btn" data-q="20 bin bandında otomatik araç arıyorum. Kazasız öncelikli. En mantıklı 5 seçenek hangileri, neden?">20k otomatik öner</button>
+        <button class="quick btn" data-q="40 bin bandında otomatik araç arıyorum. Kazasız öncelikli ama sıfıra düşürme; kazalıları en sona at. En iyi 5 seçenek ve neden?">40k otomatik öner</button>
+        <button class="quick btn" data-q="2018-2022 arası otomatik benzinlilerde kilometre bantlarına göre ortalama fiyat nedir?">KM → Fiyat (2018-2022)</button>
+        <button class="quick btn" data-q="Kazasız ve kazalı araçların ortalama fiyat farkı ne kadar?">Accident farkı</button>
+        <button class="quick btn" data-q="MPG'si yüksek (üst %20) araçlar hangi fiyat bandında?">MPG üst %20</button>
+      </div>
+
+      <div class="mt-auto text-xs text-zinc-500 leading-relaxed">
+        <div class="font-medium text-zinc-400">Not</div>
+        <div>Öneriler yalnızca <span class="text-zinc-300">mart.*</span> verisine dayanır. Yazma yetkisi yoktur.</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="flex-1 flex flex-col">
+      <header class="p-6 border-b border-zinc-800 flex items-center justify-between">
+        <div>
+          <div class="text-lg font-semibold">Araba Danışmanı</div>
+          <div class="text-sm text-zinc-400">İnsan gibi sor — veriye dayalı cevap al.</div>
+        </div>
+        <button id="toggleSql" class="px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-sm hover:bg-zinc-800">
+          SQL'i Göster/Gizle
+        </button>
+      </header>
+
+      <section id="chat" class="flex-1 p-6 overflow-auto space-y-4"></section>
+
+      <section id="result" class="p-6 border-t border-zinc-800 bg-zinc-950/60 hidden">
+        <div class="grid lg:grid-cols-3 gap-4">
+          <div class="lg:col-span-2">
+            <div class="text-sm text-zinc-400 mb-2">Öneriler</div>
+            <div id="picks" class="grid md:grid-cols-2 gap-4"></div>
+          </div>
+          <div>
+            <div class="text-sm text-zinc-400 mb-2">Özet</div>
+            <div class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+              <div id="tldr" class="text-sm leading-relaxed"></div>
+              <div class="mt-4">
+                <div class="text-xs uppercase tracking-widest text-zinc-500">Bulgular</div>
+                <ul id="findings" class="mt-2 text-sm text-zinc-200 space-y-1"></ul>
+              </div>
+              <div class="mt-4">
+                <div class="text-xs uppercase tracking-widest text-zinc-500">Sonraki adım</div>
+                <ul id="recs" class="mt-2 text-sm text-zinc-200 space-y-1"></ul>
+              </div>
+            </div>
+
+            <div id="sqlBox" class="mt-4 hidden">
+              <div class="text-sm text-zinc-400 mb-2">Üretilen SQL</div>
+              <pre class="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4 text-xs overflow-auto"><code id="sql"></code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="p-6 border-t border-zinc-800">
+        <div class="flex gap-3">
+          <input id="q" class="flex-1 px-4 py-3 rounded-2xl bg-zinc-900 border border-zinc-800 outline-none focus:border-zinc-600"
+                 placeholder="Örn: 40 bin bandında otomatik araç bakıyorum, kazasız öncelikli. En mantıklı 5 seçenek?" />
+          <button id="send" class="px-5 py-3 rounded-2xl bg-white text-zinc-900 font-semibold hover:bg-zinc-200">
+            Sor
+          </button>
+        </div>
+        <div id="hint" class="text-xs text-zinc-500 mt-2">
+          İpucu: "kazasız öncelikli ama sıfıra düşürme" yazarsan sistem kazalıları en sona iter.
+        </div>
+      </footer>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
